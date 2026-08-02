@@ -1,9 +1,5 @@
 #include "control.h"
-
-#define CONTROL_MAX_COOKING_SECONDS 200U
-#define CONTROL_TIME_STEP_SECONDS 20U
-#define CONTROL_OVERTEMPERATURE_C 30U
-#define CONTROL_MAX_SENSOR_ERRORS 3U
+#include "heatguard_config.h"
 
 static void control_stop_heating(ControlSnapshot *snapshot)
 {
@@ -74,8 +70,8 @@ uint8_t control_dispatch(ControlSnapshot *snapshot, const ControlEvent *event)
             snapshot->state = CONTROL_STATE_TIME_SETTING;
         } else if (snapshot->state == CONTROL_STATE_TIME_SETTING) {
             snapshot->cooking_seconds = (uint16_t)(snapshot->cooking_seconds +
-                                                   CONTROL_TIME_STEP_SECONDS);
-            if (snapshot->cooking_seconds > CONTROL_MAX_COOKING_SECONDS) {
+                                                   HEATGUARD_COOKING_TIME_STEP_SECONDS);
+            if (snapshot->cooking_seconds > HEATGUARD_MAX_COOKING_SECONDS) {
                 snapshot->cooking_seconds = 0U;
             }
         } else if (snapshot->state == CONTROL_STATE_POWER_SETTING) {
@@ -108,7 +104,7 @@ uint8_t control_dispatch(ControlSnapshot *snapshot, const ControlEvent *event)
         snapshot->sensor_error_count = 0U;
         snapshot->sensor_valid = 1U;
         if (snapshot->state == CONTROL_STATE_HEATING &&
-            snapshot->last_temperature_c >= CONTROL_OVERTEMPERATURE_C) {
+            snapshot->last_temperature_c >= HEATGUARD_OVERTEMPERATURE_C) {
             control_enter_fault(snapshot, CONTROL_FAULT_OVERTEMPERATURE);
         }
         break;
@@ -117,7 +113,7 @@ uint8_t control_dispatch(ControlSnapshot *snapshot, const ControlEvent *event)
         if (snapshot->sensor_error_count < UINT8_MAX) {
             ++snapshot->sensor_error_count;
         }
-        if (snapshot->sensor_error_count >= CONTROL_MAX_SENSOR_ERRORS) {
+        if (snapshot->sensor_error_count >= HEATGUARD_MAX_SENSOR_ERRORS) {
             snapshot->sensor_valid = 0U;
             if (snapshot->state == CONTROL_STATE_HEATING) {
                 control_enter_fault(snapshot, CONTROL_FAULT_SENSOR_TIMEOUT);

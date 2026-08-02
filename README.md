@@ -33,6 +33,13 @@ Tickless Idle is disabled until peripheral wake-up behavior is verified on the
 real board; the legacy low-power path disabled GPIO clocks used by the control
 peripherals.
 
+`USER/heatguard_config.h` is the single product-configuration boundary for
+queue depth, key timing, sensor period, maximum cooking time and fault
+thresholds. `USER/diagnostics.c` maintains the debugger-visible global
+`g_app_diagnostics`, including heap headroom, control-task stack watermark,
+queue headroom and fault state. It avoids allocating diagnostic strings or
+printing from control paths.
+
 ## Build
 
 Use Keil MDK 5 with `USER/project.uvprojx`:
@@ -58,6 +65,8 @@ gcc -std=c99 -Wall -Wextra -Werror -IUSER USER/control.c tests/control_test.c -o
 
 The test covers door-open stop, over-temperature lockout, sensor timeout,
 countdown completion, update-request safe stop and event-overflow lockout.
+
+GitHub Actions runs this same host test on every push and pull request.
 
 ## Verification Boundary
 

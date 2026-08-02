@@ -6,9 +6,11 @@
 #include "beep.h"
 #include "control.h"
 #include "delay.h"
+#include "diagnostics.h"
 #include "dht11.h"
 #include "exti.h"
 #include "gui.h"
+#include "heatguard_config.h"
 #include "key.h"
 #include "lcd.h"
 #include "led.h"
@@ -24,12 +26,11 @@
 #define KEY_TASK_STACK_WORDS 128U
 #define START_TASK_STACK_WORDS 128U
 
-#define CONTROL_QUEUE_LENGTH 12U
-#define CONTROL_QUEUE_WAIT_TICKS pdMS_TO_TICKS(20U)
-#define KEY_DEBOUNCE_TICKS pdMS_TO_TICKS(20U)
-#define KEY_SAMPLE_TICKS pdMS_TO_TICKS(10U)
-#define KEY_LONG_PRESS_TICKS pdMS_TO_TICKS(1000U)
-#define SENSOR_PERIOD_TICKS pdMS_TO_TICKS(1000U)
+#define CONTROL_QUEUE_WAIT_TICKS pdMS_TO_TICKS(HEATGUARD_EVENT_QUEUE_WAIT_MS)
+#define KEY_DEBOUNCE_TICKS pdMS_TO_TICKS(HEATGUARD_KEY_DEBOUNCE_MS)
+#define KEY_SAMPLE_TICKS pdMS_TO_TICKS(HEATGUARD_KEY_SAMPLE_MS)
+#define KEY_LONG_PRESS_TICKS pdMS_TO_TICKS(HEATGUARD_KEY_LONG_PRESS_MS)
+#define SENSOR_PERIOD_TICKS pdMS_TO_TICKS(HEATGUARD_SENSOR_PERIOD_MS)
 
 static QueueHandle_t control_queue;
 static TaskHandle_t key1_task_handle;
@@ -138,18 +139,22 @@ static void control_task(void *argument)
     (void)argument;
     control_init(&snapshot);
     publish_snapshot(&snapshot);
+    diagnostics_refresh(&snapshot);
 
     for (;;) {
         if (take_event_overflow() != 0U) {
             event.type = CONTROL_EVENT_SYSTEM_FAULT;
             event.value = 0U;
+            diagnostics_record_event_overflow();
             (void)control_dispatch(&snapshot, &event);
             publish_snapshot(&snapshot);
+            diagnostics_refresh(&snapshot);
         }
         if (xQueueReceive(control_queue, &event, portMAX_DELAY) == pdTRUE) {
             if (control_dispatch(&snapshot, &event) != 0U) {
                 publish_snapshot(&snapshot);
             }
+            diagnostics_refresh(&snapshot);
         }
     }
 }
@@ -256,8 +261,9 @@ int main(void)
     actuator_init();
     LCD_Init();
 
-    control_queue = xQueueCreate(CONTROL_QUEUE_LENGTH, sizeof(ControlEvent));
+    control_queue = xQueueCreate(HEATGUARD_EVENT_QUEUE_LENGTH, sizeof(ControlEvent));
     configASSERT(control_queue != NULL);
+    diagnostics_init(control_queue);
     EXTIX_Init();
 
     result = xTaskCreate(start_task, "start", START_TASK_STACK_WORDS,

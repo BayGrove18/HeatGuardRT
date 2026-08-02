@@ -95,7 +95,7 @@ void vApplicationAssert(const char *file, int line);
                                                                         //一般是硬件计算前导零指令，如果所使用的
                                                                         //MCU没有这些硬件指令的话此宏应该设置为0！
 #define configUSE_TICKLESS_IDLE					0                       //未验证外设唤醒前保持关闭，避免休眠时关闭控制 GPIO 时钟
-#define configUSE_QUEUE_SETS					1                       //为1时启用队列
+#define configUSE_QUEUE_SETS					0                       //项目未使用队列集
 #define configCPU_CLOCK_HZ						(SystemCoreClock)       //CPU频率
 #define configTICK_RATE_HZ						(1000)                  //时钟节拍频率，这里设置为1000，周期就是1ms
 #define configMAX_PRIORITIES					(32)                    //可使用的最大优先级
@@ -112,10 +112,10 @@ void vApplicationAssert(const char *file, int line);
 #define configCHECK_FOR_STACK_OVERFLOW			2                       //检查任务栈边界和填充区
                                                                         //用户必须提供一个栈溢出钩子函数，如果使用的话
                                                                         //此值可以为1或者2，因为有两种栈溢出检测方法。
-#define configUSE_RECURSIVE_MUTEXES				1                       //为1时使用递归互斥信号量
+#define configUSE_RECURSIVE_MUTEXES				0                       //项目未使用递归互斥信号量
 #define configUSE_MALLOC_FAILED_HOOK			1                       //内存申请失败时进入安全停机钩子
 #define configUSE_APPLICATION_TASK_TAG			0                       
-#define configUSE_COUNTING_SEMAPHORES			1                       //为1时使用计数信号量
+#define configUSE_COUNTING_SEMAPHORES			0                       //项目未使用计数信号量
 
 /***************************************************************************************************************/
 /*                                FreeRTOS与内存申请有关配置选项                                                */
@@ -133,8 +133,8 @@ void vApplicationAssert(const char *file, int line);
 /*                                FreeRTOS与运行时间和任务状态收集有关的配置选项                                 */
 /***************************************************************************************************************/
 #define configGENERATE_RUN_TIME_STATS	        0                       //为1时启用运行时间统计功能，/*该项目没用到，因此关闭--不甘心的咸鱼注*/
-#define configUSE_TRACE_FACILITY				1                       //为1启用可视化跟踪调试
-#define configUSE_STATS_FORMATTING_FUNCTIONS	1                       //与宏configUSE_TRACE_FACILITY同时为1时会编译下面3个函数
+#define configUSE_TRACE_FACILITY				0                       //未接入 Trace 工具时关闭额外 TCB 字段
+#define configUSE_STATS_FORMATTING_FUNCTIONS	0                       //未接入运行时统计格式化输出
                                                                         //prvWriteNameToBuffer(),vTaskList(),
                                                                         //vTaskGetRunTimeStats()
                                                                         
@@ -147,7 +147,7 @@ void vApplicationAssert(const char *file, int line);
 /***************************************************************************************************************/
 /*                                FreeRTOS与软件定时器有关的配置选项                                            */
 /***************************************************************************************************************/
-#define configUSE_TIMERS				        1                               //为1时启用软件定时器
+#define configUSE_TIMERS				        0                               //项目使用硬件 TIM4，不创建软件定时器守护任务
 #define configTIMER_TASK_PRIORITY		        (configMAX_PRIORITIES-1)        //软件定时器优先级
 #define configTIMER_QUEUE_LENGTH		        5                               //软件定时器队列长度
 #define configTIMER_TASK_STACK_DEPTH	        (configMINIMAL_STACK_SIZE*2)    //软件定时器任务堆栈大小
@@ -155,7 +155,8 @@ void vApplicationAssert(const char *file, int line);
 /***************************************************************************************************************/
 /*                                FreeRTOS可选函数配置选项                                                      */
 /***************************************************************************************************************/
-#define INCLUDE_xTaskGetSchedulerState          1                       
+#define INCLUDE_xTaskGetSchedulerState          1                        
+#define INCLUDE_uxTaskGetStackHighWaterMark     1
 #define INCLUDE_vTaskPrioritySet		        1
 #define INCLUDE_uxTaskPriorityGet		        1
 #define INCLUDE_vTaskDelete				        1

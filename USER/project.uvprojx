@@ -391,6 +391,11 @@
               <FilePath>.\control.c</FilePath>
             </File>
             <File>
+              <FileName>diagnostics.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\diagnostics.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\main.c</FilePath>
@@ -551,16 +556,6 @@
           <GroupName>FreeRTOS_Core</GroupName>
           <Files>
             <File>
-              <FileName>croutine.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\FreeRTOS\croutine.c</FilePath>
-            </File>
-            <File>
-              <FileName>event_groups.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\FreeRTOS\event_groups.c</FilePath>
-            </File>
-            <File>
               <FileName>list.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeRTOS\list.c</FilePath>
@@ -574,11 +569,6 @@
               <FileName>tasks.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeRTOS\tasks.c</FilePath>
-            </File>
-            <File>
-              <FileName>timers.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\FreeRTOS\timers.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -9,3 +9,26 @@ DebugConfig/
 *.uvguix.*
 JLinkSettings.ini
 EventRecorderStub.scvd
+
+# Legacy modules retained locally for reference but excluded from HeatGuardRT.
+BSP/DMA/
+BSP/IAP/
+BSP/STMFLASH/
+BSP/microwave/
+FreeRTOS/croutine.c
+FreeRTOS/event_groups.c
+FreeRTOS/timers.c
+FreeRTOS/portable/MemMang/heap_1.c
+FreeRTOS/portable/MemMang/heap_2.c
+FreeRTOS/portable/MemMang/heap_3.c
+FreeRTOS/portable/MemMang/heap_5.c
+FreeRTOS/portable/RVDS/ARM7_LPC21xx/
+FreeRTOS/portable/RVDS/ARM_CA9/
+FreeRTOS/portable/RVDS/ARM_CM0/
+FreeRTOS/portable/RVDS/ARM_CM4F/
+FreeRTOS/portable/RVDS/ARM_CM4_MPU/
+FreeRTOS/portable/RVDS/ARM_CM7/
+CORE/startup_stm32f10x_hd.s
+keilkilll.bat
+todo.mdc
+文件夹说明.txt

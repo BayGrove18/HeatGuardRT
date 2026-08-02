@@ -1,2 +1,0 @@
-CORE文件夹放的是库核心文件及启动文件，BSP放的是硬件的驱动文件，OBJ放的是编译文件，
-STM32F10XFWLIB放的是库函数，SYSYTEM放的是串口、延时驱动文件；FREE开头的放的是RTOS文件，USER存放的是Keil工程，其他文件不用管。
