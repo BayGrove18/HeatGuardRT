@@ -1,0 +1,11 @@
+OBJ/
+DebugConfig/
+*.axf
+*.hex
+*.map
+*.lst
+*.build_log.htm
+*.uvoptx
+*.uvguix.*
+JLinkSettings.ini
+EventRecorderStub.scvd
