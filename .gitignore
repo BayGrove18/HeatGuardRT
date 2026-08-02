@@ -15,6 +15,7 @@ BSP/DMA/
 BSP/IAP/
 BSP/STMFLASH/
 BSP/microwave/
+BSP/KEY/
 FreeRTOS/croutine.c
 FreeRTOS/event_groups.c
 FreeRTOS/timers.c

@@ -11,6 +11,23 @@ the one-second timer and the DHT11 worker submit typed events to its bounded
 queue. `actuator.c` is the only application module that writes the door, heater,
 turntable and countdown-timer registers.
 
+## Hardware Contract
+
+| Signal | Pin | Behavior |
+| --- | --- | --- |
+| Door interlock | PB12 / EXTI12 | Active-low physical input. Both edges are observed; an open event zeros heater and turntable PWM in the ISR before queueing the state event. |
+| Start key | PB10 / EXTI10 | Active-low request to start heating. |
+| Mode key | PB1 / EXTI1 | Active-low short/long press for time and power configuration. |
+| Heater | PA2 / TIM2_CH3 | PWM output, written only by `actuator.c`. |
+| Door servo | PA1 / TIM2_CH2 | Door actuator output. |
+| Turntable | PB0 / TIM3_CH3 | PWM output, written only by `actuator.c`. |
+| Temperature | PC14 | DHT11 data pin. |
+| Upgrade staging | W25Q64 on SPI1, CS PA4 | Shares PA5/PA6/PA7 with the LCD under an RTOS mutex. |
+
+The watchdog uses the independent IWDG. It is reloaded only while the control
+task continues to make progress; a stalled control task first receives a safe
+PWM shutdown, then is reset by IWDG.
+
 - Key short press: toggle the door or configure time and power.
 - Key long press: start heating only when the door is closed, a valid sensor
   sample exists, no fault is latched and time is non-zero.
@@ -32,6 +49,31 @@ reprogrammed because it belongs to FreeRTOS after the scheduler starts.
 Tickless Idle is disabled until peripheral wake-up behavior is verified on the
 real board; the legacy low-power path disabled GPIO clocks used by the control
 peripherals.
+
+## Upgrade Contract
+
+UART1 receives firmware through DMA1 Channel 5 in circular mode. Half-transfer,
+transfer-complete and IDLE interrupts drain the RX ring into the lower-priority
+upgrade worker, keeping Flash I/O out of interrupt context.
+
+Frame format is little-endian:
+
+```
+A5 5A | type:u8 | payload_length:u16 | payload | crc16_ccitt:u16
+```
+
+- `BEGIN` (`0x01`): 12-byte payload of image size, image CRC32 and version.
+- `DATA` (`0x02`): sequence number followed by up to 238 bytes of image data.
+- `FINISH` (`0x03`): zero-length payload; accepted only when all bytes and CRC32 match.
+- `ABORT` (`0x04`): discards the in-memory session.
+
+Verified data is staged in W25Q64. A CRC-protected `BootManifest` is then
+written to the dedicated final Flash sector. Before publishing that manifest,
+the application reads the staged image back in blocks and recalculates CRC32.
+Only after `control_task` has
+applied its update-safe state does the application set the backup-register
+mailbox and reset. The transactional Bootloader consumes and clears that
+mailbox, verifies the manifest and installs or rolls back the staged image.
 
 `USER/heatguard_config.h` is the single product-configuration boundary for
 queue depth, key timing, sensor period, maximum cooking time and fault
@@ -65,6 +107,8 @@ gcc -std=c99 -Wall -Wextra -Werror -IUSER USER/control.c tests/control_test.c -o
 
 The test covers door-open stop, over-temperature lockout, sensor timeout,
 countdown completion, update-request safe stop and event-overflow lockout.
+The handoff test covers the standard CRC32 vector and rejects a corrupted
+Bootloader manifest.
 
 GitHub Actions runs this same host test on every push and pull request.
 

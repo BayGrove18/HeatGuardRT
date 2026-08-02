@@ -16,10 +16,10 @@ static void prepare_heating(ControlSnapshot *snapshot)
 {
     control_init(snapshot);
     dispatch(snapshot, CONTROL_EVENT_TEMPERATURE, 25U);
-    dispatch(snapshot, CONTROL_EVENT_KEY1_SHORT, 0U);
-    dispatch(snapshot, CONTROL_EVENT_KEY2_SHORT, 0U);
-    dispatch(snapshot, CONTROL_EVENT_KEY2_SHORT, 0U);
-    dispatch(snapshot, CONTROL_EVENT_KEY1_LONG, 0U);
+    dispatch(snapshot, CONTROL_EVENT_DOOR_CHANGED, 1U);
+    dispatch(snapshot, CONTROL_EVENT_MODE_SHORT, 0U);
+    dispatch(snapshot, CONTROL_EVENT_MODE_SHORT, 0U);
+    dispatch(snapshot, CONTROL_EVENT_START_REQUEST, 0U);
 
     assert(snapshot->state == CONTROL_STATE_HEATING);
     assert(snapshot->heater_enabled != 0U);
@@ -30,7 +30,7 @@ static void test_door_open_stops_heating(void)
     ControlSnapshot snapshot;
 
     prepare_heating(&snapshot);
-    dispatch(&snapshot, CONTROL_EVENT_KEY1_SHORT, 0U);
+    dispatch(&snapshot, CONTROL_EVENT_DOOR_CHANGED, 0U);
     assert(snapshot.door_closed == 0U);
     assert(snapshot.heater_enabled == 0U);
     assert(snapshot.state == CONTROL_STATE_STANDBY);
@@ -46,9 +46,13 @@ static void test_overtemperature_latches_fault(void)
     assert(snapshot.fault == CONTROL_FAULT_OVERTEMPERATURE);
     assert(snapshot.heater_enabled == 0U);
 
-    dispatch(&snapshot, CONTROL_EVENT_KEY1_LONG, 0U);
+    dispatch(&snapshot, CONTROL_EVENT_START_REQUEST, 0U);
     assert(snapshot.state == CONTROL_STATE_FAULT);
     assert(snapshot.heater_enabled == 0U);
+
+    dispatch(&snapshot, CONTROL_EVENT_DOOR_CHANGED, 0U);
+    assert(snapshot.door_closed == 0U);
+    assert(snapshot.state == CONTROL_STATE_FAULT);
 }
 
 static void test_sensor_timeout_stops_heating(void)

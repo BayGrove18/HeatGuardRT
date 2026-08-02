@@ -42,20 +42,17 @@ uint8_t control_dispatch(ControlSnapshot *snapshot, const ControlEvent *event)
     ControlSnapshot before = *snapshot;
 
     switch (event->type) {
-    case CONTROL_EVENT_KEY1_SHORT:
-        if (snapshot->state != CONTROL_STATE_FAULT &&
-            snapshot->state != CONTROL_STATE_UPDATE_PENDING) {
-            snapshot->door_closed = (uint8_t)!snapshot->door_closed;
-            if (snapshot->door_closed == 0U) {
-                control_stop_heating(snapshot);
-            }
-            if (snapshot->state == CONTROL_STATE_COMPLETED) {
-                snapshot->state = CONTROL_STATE_STANDBY;
-            }
+    case CONTROL_EVENT_DOOR_CHANGED:
+        snapshot->door_closed = event->value != 0U ? 1U : 0U;
+        if (snapshot->door_closed == 0U) {
+            control_stop_heating(snapshot);
+        }
+        if (snapshot->state == CONTROL_STATE_COMPLETED) {
+            snapshot->state = CONTROL_STATE_STANDBY;
         }
         break;
 
-    case CONTROL_EVENT_KEY1_LONG:
+    case CONTROL_EVENT_START_REQUEST:
         if (snapshot->state != CONTROL_STATE_FAULT &&
             snapshot->state != CONTROL_STATE_UPDATE_PENDING &&
             control_heating_permitted(snapshot) != 0U) {
@@ -64,7 +61,7 @@ uint8_t control_dispatch(ControlSnapshot *snapshot, const ControlEvent *event)
         }
         break;
 
-    case CONTROL_EVENT_KEY2_SHORT:
+    case CONTROL_EVENT_MODE_SHORT:
         if (snapshot->state == CONTROL_STATE_STANDBY ||
             snapshot->state == CONTROL_STATE_COMPLETED) {
             snapshot->state = CONTROL_STATE_TIME_SETTING;
@@ -79,7 +76,7 @@ uint8_t control_dispatch(ControlSnapshot *snapshot, const ControlEvent *event)
         }
         break;
 
-    case CONTROL_EVENT_KEY2_LONG:
+    case CONTROL_EVENT_MODE_LONG:
         if (snapshot->state == CONTROL_STATE_TIME_SETTING) {
             snapshot->state = CONTROL_STATE_POWER_SETTING;
         } else if (snapshot->state == CONTROL_STATE_POWER_SETTING) {

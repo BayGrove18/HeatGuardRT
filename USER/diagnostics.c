@@ -16,6 +16,11 @@ void diagnostics_record_event_overflow(void)
     ++g_app_diagnostics.event_overflow_count;
 }
 
+void diagnostics_set_reset_cause(uint8_t cause)
+{
+    g_app_diagnostics.reset_cause = cause;
+}
+
 void diagnostics_refresh(const ControlSnapshot *snapshot)
 {
     UBaseType_t queue_free_slots;

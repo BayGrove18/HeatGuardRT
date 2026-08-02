@@ -14,4 +14,20 @@
 #define HEATGUARD_OVERTEMPERATURE_C 30U
 #define HEATGUARD_MAX_SENSOR_ERRORS 3U
 
+/* Hardware input map. All switches are active low with internal pull-ups. */
+#define HEATGUARD_START_PIN (1U << 10)
+#define HEATGUARD_DOOR_PIN (1U << 12)
+#define HEATGUARD_MODE_PIN (1U << 1)
+
+/* W25Q64 staging layout. The final 4 KiB sector stores the boot manifest. */
+#define HEATGUARD_STAGE_IMAGE_OFFSET 0x000000UL
+#define HEATGUARD_STAGE_IMAGE_MAX_SIZE 0x007FF000UL
+#define HEATGUARD_STAGE_MANIFEST_OFFSET 0x007FF000UL
+#define HEATGUARD_W25Q_CS_PIN (1U << 4)
+
+#define HEATGUARD_UART_RX_RING_SIZE 256U
+#define HEATGUARD_UART_RX_QUEUE_LENGTH 384U
+#define HEATGUARD_UPGRADE_MAX_PAYLOAD 240U
+#define HEATGUARD_SUPERVISOR_PERIOD_MS 250U
+
 #endif

@@ -17,12 +17,14 @@ typedef struct {
     uint8_t fault;
     uint8_t sensor_error_count;
     uint8_t last_temperature_c;
+    uint8_t reset_cause;
 } AppDiagnostics;
 
 extern volatile AppDiagnostics g_app_diagnostics;
 
 void diagnostics_init(QueueHandle_t event_queue);
 void diagnostics_record_event_overflow(void);
+void diagnostics_set_reset_cause(uint8_t cause);
 void diagnostics_refresh(const ControlSnapshot *snapshot);
 
 #endif

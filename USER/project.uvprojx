@@ -381,6 +381,11 @@
           <GroupName>USER</GroupName>
           <Files>
             <File>
+              <FileName>boot_handoff.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\boot_handoff.c</FilePath>
+            </File>
+            <File>
               <FileName>actuator.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\actuator.c</FilePath>
@@ -391,14 +396,49 @@
               <FilePath>.\control.c</FilePath>
             </File>
             <File>
+              <FileName>crc32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\crc32.c</FilePath>
+            </File>
+            <File>
               <FileName>diagnostics.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\diagnostics.c</FilePath>
             </File>
             <File>
+              <FileName>handoff_contract.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\handoff_contract.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi_bus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\spi_bus.c</FilePath>
+            </File>
+            <File>
+              <FileName>supervisor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\supervisor.c</FilePath>
+            </File>
+            <File>
+              <FileName>upgrade.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\upgrade.c</FilePath>
+            </File>
+            <File>
+              <FileName>upgrade_transport.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\upgrade_transport.c</FilePath>
+            </File>
+            <File>
+              <FileName>w25q64.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\w25q64.c</FilePath>
             </File>
             <File>
               <FileName>stm32f10x_it.c</FileName>
@@ -436,11 +476,6 @@
               <FilePath>..\BSP\LCD\GUI.c</FilePath>
             </File>
             <File>
-              <FileName>key.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\BSP\KEY\key.c</FilePath>
-            </File>
-            <File>
               <FileName>lcd.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\BSP\LCD\lcd.c</FilePath>
@@ -465,6 +500,11 @@
         <Group>
           <GroupName>SYSTEM</GroupName>
           <Files>
+            <File>
+              <FileName>stm32f10x_bkp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32F10x_FWLib\src\stm32f10x_bkp.c</FilePath>
+            </File>
             <File>
               <FileName>sys.c</FileName>
               <FileType>1</FileType>
@@ -516,9 +556,14 @@
               <FilePath>..\STM32F10x_FWLib\src\stm32f10x_exti.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f10x_flash.c</FileName>
+              <FileName>stm32f10x_iwdg.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\STM32F10x_FWLib\src\stm32f10x_flash.c</FilePath>
+              <FilePath>..\STM32F10x_FWLib\src\stm32f10x_iwdg.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_pwr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32F10x_FWLib\src\stm32f10x_pwr.c</FilePath>
             </File>
             <File>
               <FileName>stm32f10x_gpio.c</FileName>
@@ -529,11 +574,6 @@
               <FileName>stm32f10x_rcc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\STM32F10x_FWLib\src\stm32f10x_rcc.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_rtc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\STM32F10x_FWLib\src\stm32f10x_rtc.c</FilePath>
             </File>
             <File>
               <FileName>stm32f10x_spi.c</FileName>
