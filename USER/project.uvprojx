@@ -416,6 +416,11 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
+              <FileName>power_manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\power_manager.c</FilePath>
+            </File>
+            <File>
               <FileName>spi_bus.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\spi_bus.c</FilePath>
@@ -564,6 +569,11 @@
               <FileName>stm32f10x_pwr.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\STM32F10x_FWLib\src\stm32f10x_pwr.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32F10x_FWLib\src\stm32f10x_rtc.c</FilePath>
             </File>
             <File>
               <FileName>stm32f10x_gpio.c</FileName>

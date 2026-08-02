@@ -16,6 +16,12 @@ void diagnostics_record_event_overflow(void)
     ++g_app_diagnostics.event_overflow_count;
 }
 
+void diagnostics_record_stop(uint32_t elapsed_ticks)
+{
+    ++g_app_diagnostics.stop_count;
+    g_app_diagnostics.stop_elapsed_ticks += elapsed_ticks;
+}
+
 void diagnostics_set_reset_cause(uint8_t cause)
 {
     g_app_diagnostics.reset_cause = cause;

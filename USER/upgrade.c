@@ -6,6 +6,7 @@
 #include "crc32.h"
 #include "handoff_contract.h"
 #include "heatguard_config.h"
+#include "power_manager.h"
 #include "upgrade_transport.h"
 #include "w25q64.h"
 
@@ -84,6 +85,7 @@ static void session_abort(void)
     session.verified = 0U;
     session.received_size = 0U;
     session.expected_sequence = 0U;
+    power_manager_set_upgrade_active(0U);
 }
 
 static uint8_t verify_staged_image(void)
@@ -117,6 +119,7 @@ static void handle_frame(void)
     if (parser.type == UPGRADE_FRAME_BEGIN && parser.length == 12U) {
         uint32_t image_size = read_u32_le(&parser.payload[0]);
 
+        power_manager_set_upgrade_active(1U);
         if (image_size == 0U || image_size > HEATGUARD_STAGE_IMAGE_MAX_SIZE ||
             w25q64_erase_range(HEATGUARD_STAGE_IMAGE_OFFSET, image_size) == 0U) {
             session_abort();

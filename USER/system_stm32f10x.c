@@ -268,6 +268,12 @@ void SystemInit (void)
 #endif 
 }
 
+void SystemClock_RestoreAfterStop(void)
+{
+  SetSysClock();
+  SystemCoreClockUpdate();
+}
+
 /**
   * @brief  Update SystemCoreClock variable according to Clock Register Values.
   *         The SystemCoreClock variable contains the core clock (HCLK), it can

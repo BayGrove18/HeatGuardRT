@@ -14,6 +14,7 @@
 #include "heatguard_config.h"
 #include "lcd.h"
 #include "led.h"
+#include "power_manager.h"
 #include "spi_bus.h"
 #include "supervisor.h"
 #include "timer.h"
@@ -38,7 +39,7 @@
 #define BOOT_TASK_STACK_WORDS 128U
 
 #define CONTROL_QUEUE_WAIT_TICKS pdMS_TO_TICKS(HEATGUARD_EVENT_QUEUE_WAIT_MS)
-#define CONTROL_HEARTBEAT_TICKS pdMS_TO_TICKS(100U)
+#define CONTROL_HEARTBEAT_TICKS pdMS_TO_TICKS(HEATGUARD_SUPERVISOR_PERIOD_MS)
 #define KEY_DEBOUNCE_TICKS pdMS_TO_TICKS(HEATGUARD_KEY_DEBOUNCE_MS)
 #define KEY_SAMPLE_TICKS pdMS_TO_TICKS(HEATGUARD_KEY_SAMPLE_MS)
 #define KEY_LONG_PRESS_TICKS pdMS_TO_TICKS(HEATGUARD_KEY_LONG_PRESS_MS)
@@ -164,6 +165,7 @@ static void control_task(void *argument)
 
     (void)argument;
     control_init(&snapshot);
+    power_manager_set_control_state(snapshot.state);
     publish_snapshot(&snapshot);
     diagnostics_refresh(&snapshot);
 
@@ -175,12 +177,14 @@ static void control_task(void *argument)
             (void)control_dispatch(&snapshot, &event);
             publish_snapshot(&snapshot);
             diagnostics_refresh(&snapshot);
+            power_manager_set_control_state(snapshot.state);
         }
         if (xQueueReceive(control_queue, &event, CONTROL_HEARTBEAT_TICKS) == pdTRUE) {
             if (control_dispatch(&snapshot, &event) != 0U) {
                 publish_snapshot(&snapshot);
             }
             diagnostics_refresh(&snapshot);
+            power_manager_set_control_state(snapshot.state);
             if (snapshot.state == CONTROL_STATE_UPDATE_PENDING) {
                 upgrade_commit_after_safe_state();
             }
@@ -296,6 +300,7 @@ int main(void)
 
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
     boot_handoff_init();
+    power_manager_init();
     diagnostics_set_reset_cause((uint8_t)boot_handoff_reset_cause());
     delay_init();
     uart_init(115200U);
@@ -331,6 +336,13 @@ void EXTI1_IRQHandler(void)
         }
         EXTI_ClearITPendingBit(EXTI_Line1);
         portYIELD_FROM_ISR(higher_priority_task_woken);
+    }
+}
+
+void EXTI0_IRQHandler(void)
+{
+    if (EXTI_GetITStatus(EXTI_Line0) != RESET) {
+        EXTI_ClearITPendingBit(EXTI_Line0);
     }
 }
 

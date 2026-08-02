@@ -23,6 +23,7 @@ turntable and countdown-timer registers.
 | Turntable | PB0 / TIM3_CH3 | PWM output, written only by `actuator.c`. |
 | Temperature | PC14 | DHT11 data pin. |
 | Upgrade staging | W25Q64 on SPI1, CS PA4 | Shares PA5/PA6/PA7 with the LCD under an RTOS mutex. |
+| Upgrade wake | PA0 / EXTI0 | Active-low host wake signal. Assert it before UART1 transfer when the device is in STOP. |
 
 The watchdog uses the independent IWDG. It is reloaded only while the control
 task continues to make progress; a stalled control task first receives a safe
@@ -45,10 +46,26 @@ They only notify the key workers. The key workers use `vTaskDelay()` while
 sampling press duration, so they yield CPU time instead of busy waiting.
 
 `SYSTEM/delay/delay.c` uses TIM1 as a 1 MHz short-delay source. SysTick is not
-reprogrammed because it belongs to FreeRTOS after the scheduler starts.
-Tickless Idle is disabled until peripheral wake-up behavior is verified on the
-real board; the legacy low-power path disabled GPIO clocks used by the control
-peripherals.
+reprogrammed from task context because it belongs to FreeRTOS after the
+scheduler starts.
+
+## Low Power Contract
+
+FreeRTOS Tickless Idle uses the RTC Alarm and STM32F103 STOP mode. The custom
+tickless callback stops SysTick, turns off the LCD backlight, enters STOP and
+uses the elapsed RTC count to advance the kernel tick after wake-up. It then
+restores the system clock and SysTick before scheduling resumes.
+
+STOP is permitted only in `STANDBY`, time/power configuration and `COMPLETED`.
+It is forbidden while heating, fault handling, boot handoff or any firmware
+upgrade session is active. Door and key EXTI lines, PA0 upgrade wake, and RTC
+Alarm can wake the device. The IWDG remains active throughout STOP.
+
+RTC prefers an external 32.768 kHz crystal and runs at 1024 Hz. If the board
+does not fit LSE, it falls back to the nominal 40 kHz LSI divided to 1 kHz;
+LSI clock error must be measured and calibrated before using its timing for a
+production timeout guarantee. `g_app_diagnostics` exposes STOP count and total
+suppressed ticks for board-side verification.
 
 ## Upgrade Contract
 
@@ -117,7 +134,8 @@ GitHub Actions runs this same host test on every push and pull request.
 Keil compilation and host state-transition tests are complete. The following
 require the real circuit before they can be claimed as results: DHT11 signal
 integrity, PWM output timing, door actuator behavior, end-to-end upgrade
-transport and fault-to-output latency.
+transport, STOP wake-up behavior, fault-to-output latency and current
+consumption.
 
 ## Code Origin
 
